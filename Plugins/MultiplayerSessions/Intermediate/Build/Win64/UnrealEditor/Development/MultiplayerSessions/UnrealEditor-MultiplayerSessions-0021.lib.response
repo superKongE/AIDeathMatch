@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-MultiplayerSessions-0021.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\hndud\Documents\Unreal Projects\DeathMatch\Intermediate\Build\Win64\DeathMatchEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\hndud\Documents\Unreal Projects\DeathMatch\Plugins\MultiplayerSessions\Intermediate\Build\Win64\UnrealEditor\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.obj"
+"C:\Users\hndud\Documents\Unreal Projects\DeathMatch\Plugins\MultiplayerSessions\Intermediate\Build\Win64\UnrealEditor\Development\MultiplayerSessions\Module.MultiplayerSessions.gen.cpp.obj"
+"C:\Users\hndud\Documents\Unreal Projects\DeathMatch\Plugins\MultiplayerSessions\Intermediate\Build\Win64\UnrealEditor\Development\MultiplayerSessions\Default.rc2.res"
+/OUT:"C:\Users\hndud\Documents\Unreal Projects\DeathMatch\Plugins\MultiplayerSessions\Intermediate\Build\Win64\UnrealEditor\Development\MultiplayerSessions\UnrealEditor-MultiplayerSessions-0021.lib"
