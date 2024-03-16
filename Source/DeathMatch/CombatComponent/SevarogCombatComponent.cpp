@@ -91,32 +91,24 @@ void USevarogCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (bDefaultAttackDelay)
-	{
-		if (DefaultAttackPressed)
-			bDefaultAttackSuccess = true;
-		
+	{	
+		// 공격에 딜레이를 주기 위함 
 		CurrentDefaultAttackDelayTime += DeltaTime;
-
+		// 공격키를 계속 누르고 있는 경우 DefaultAttackDelay초 이상이 지나야지만 자동 공격이 이루어진다
 		if (CurrentDefaultAttackDelayTime > DefaultAttackDelay)
 		{
-			if (bDefaultAttackSuccess)
-			{
+			if (DefaultAttackPressed)
 				DefaultAttackPlay();
-			}
 
 			bDefaultAttackDelay = false;
 		}
 	}
 
 	if (bTakeDown)
-	{
 		SecondSkillTakeDown(DeltaTime);
-	}
 
 	if (bWeaponTrace)
-	{
 		StartWeaponTrace();
-	}
 
 	if (bInterpDashCamera && OwnerCharacter && OwnerCharacter->GetSpringArmComponent())
 	{
@@ -124,9 +116,7 @@ void USevarogCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		OwnerCharacter->GetSpringArmComponent()->TargetArmLength = CurrentTargetArmLength;
 
 		if (FMath::Abs(TargetTargetArmLength - CurrentTargetArmLength) < 5.f)
-		{
 			bInterpDashCamera = false;
-		}
 	}
 }
 void USevarogCombatComponent::PlayDefaultAttackMontage(ESevarogSkill State)
@@ -226,7 +216,6 @@ void USevarogCombatComponent::Dash()
 		bDash = true;
 		OwnerCharacter->GetCharacterMovement()->StopMovementImmediately();
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-		//OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		MoveTimeline->PlayFromStart();
 
 		bDashTimeEnd = false;
@@ -274,13 +263,9 @@ void USevarogCombatComponent::UpdateMoveCurve(FVector Value)
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, FQP);
 	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, true);
 	if (HitResult.bBlockingHit)
-	{
 		Location = HitResult.ImpactPoint;
-	}
 	else
-	{
 		Location = End;
-	}
 
 	OwnerCharacter->SetActorLocation(Location + FVector(0.f,0.f,88.f));
 }
@@ -290,7 +275,6 @@ void USevarogCombatComponent::EndMoveCurve()
 
 	SetCurrentCombatState(ECombatState::ECS_Idle);
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	//OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	TargetTargetArmLength = InitTargetArmLength;
 	bDash = false;
 	bInterpDashCamera = true;
@@ -323,10 +307,8 @@ void USevarogCombatComponent::ReadyForWeaponTrace()
 	WeaponSocket->GetSocketMatrix(WeaponSocketMartix, OwnerCharacter->GetMesh());
 	const FVector Direction(WeaponSocketMartix.GetUnitAxis(EAxis::X));
 
-	for (int i = 1; i < 9; i++)
-	{
-		WeaponSocketArr[i].CurrentLocation = Location + Direction * 30.f * i;
-	}
+	for (int i = 1; i < WeaponSocketCnt; i++)
+		WeaponSocketArr[i].CurrentLocation = Location + Direction * WeaponSocketTraceDistance * i;
 }
 void USevarogCombatComponent::StartWeaponTrace()
 {
@@ -341,13 +323,12 @@ void USevarogCombatComponent::StartWeaponTrace()
 	FCollisionQueryParams FQP;
 	FQP.AddIgnoredActor(OwnerCharacter);
 
-
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < WeaponSocketCnt; i++)
 	{
 		FWeaponSocketInfo WeaponSocketInfo = WeaponSocketArr[i];
 
-		//DrawDebugLine(GetWorld(), WeaponSocketInfo.CurrentLocation, Location + Direction * 30.f * i, FColor::Red, true);
-		GetWorld()->LineTraceSingleByChannel(HitResult, WeaponSocketInfo.CurrentLocation, Location + Direction * 30.f * i, ECollisionChannel::ECC_Visibility, FQP);
+		// 이전 프레임의 소켓으로부터 현재 프레임의 소켓까지 LineTrace수행
+		GetWorld()->LineTraceSingleByChannel(HitResult, WeaponSocketInfo.CurrentLocation, Location + Direction * WeaponSocketTraceDistance * i, ECollisionChannel::ECC_Visibility, FQP);
 		if (HitResult.bBlockingHit)
 		{
 			// impact point에 이펙트 생성
@@ -363,7 +344,7 @@ void USevarogCombatComponent::StartWeaponTrace()
 				HitCharSet.Emplace(Chr);
 		}
 
-		WeaponSocketArr[i].CurrentLocation = Location + Direction * 30.f * i;
+		WeaponSocketArr[i].CurrentLocation = Location + Direction * WeaponSocketTraceDistance * i;
 	}
 }
 bool USevarogCombatComponent::IsCharacterBehindWall(ACharacter* Chr)
@@ -399,7 +380,7 @@ void USevarogCombatComponent::DefaultAttack(const TArray<FHitResult>& HitResults
 {
 	DefaultAttackPressed = true;
 
-	// 첫번째 스킬을 써서 콤보공격이 가능하게 될 시
+	// 첫번째 스킬을 써서 공속이 빨라질 시
 	// 마우스를 꾹 누르는것 보다 클릭으로 더 빠르게 콤보 공격 가능하게 끔
 	if (bDefaultAttackDelay)
 	{
@@ -422,31 +403,30 @@ void USevarogCombatComponent::DefaultAttackPlay()
 
 	DefaultAttackStartLocation = OwnerCharacter->GetActorLocation();
 
+	bWeaponTrace = true;
 	SetCurrentCombatState(ECombatState::ECS_Attack);
 
 	PlayDefaultAttackMontage(ESevarogSkill::ESS_DefaultAttack);
 
 	DefaultAttackWeaponTrailComponent->SetVisibility(true);
 
-	bWeaponTrace = true;
-
 	DefaultAttackCnt = (DefaultAttackCnt + 1) % 2;
 }
+// 무기를 다 휘두르면 이벤트 그래프에서 버프가 켜진상탠지 확인하기 위해 호출됨 + 데미지 주기 
 void USevarogCombatComponent::DefaultAttackBuff()
 {
 	DefaultAttackWeaponTrailComponent->SetVisibility(false);
 	bWeaponTrace = false;
+
+	// 버프가 켜져있으면
 	if (bFastBuff)
 	{
-		bDefaultAttackSuccess = false;
 		CurrentDefaultAttackDelayTime = 0.f;
 		bDefaultAttackDelay = true;
 	}
 
 	for (ACharacter* Chr : HitCharSet)
-	{
 		UGameplayStatics::ApplyDamage(Chr, WeaponDamage, OwnerCharacter->GetController(), OwnerCharacter, UDamageType::StaticClass());
-	}
 	HitCharSet.Reset();
 	HitParticleSet.Reset();
 }

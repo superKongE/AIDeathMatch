@@ -73,49 +73,7 @@ void URevenantCombatComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	SetCrossHair(DeltaTime);
 	SpawnTeleport();
 
-	if (bThirdSkillPressed)
-	{
-		const FVector HandSocketLocation = RevenantCharacter->GetMesh()->GetSocketLocation(FName("hand_r_ability_socket"));
-		const FVector FowardVecotr = RevenantCharacter->GetMesh()->GetRightVector();
-		//const FVector HandFowardVecotr = RevenantCharacter->GetMesh()->GetSocketTransform(FName("hand_r_ability_socket")).GetUnitAxis(EAxis::X);
-		const FRotator SocketRotation = RevenantCharacter->GetMesh()->GetSocketRotation(FName("hand_r_ability_socket"));
-		const FVector Start = HandSocketLocation + FowardVecotr * 50.f;
-		FVector Direction = HitResults[0].ImpactPoint - HandSocketLocation;
-		Direction.Normalize();
-
-		float Distance = (HitResults[0].ImpactPoint - HandSocketLocation).Size();
-		if (Distance > ThirdSkillLength)
-			Distance = ThirdSkillLength;
-
-		if (ThirdSkillEffect == nullptr)
-		{
-			ThirdSkillEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ThirdSkillParticle,
-				HandSocketLocation + FowardVecotr * 50.f, (HitResults[0].ImpactPoint - HandSocketLocation).Rotation());
-
-			ThirdSkillEffect->SetWorldScale3D(FVector(1.f, 2.f, 1.f));
-		}
-		else
-		{
-			ThirdSkillEffect->SetWorldLocation(HandSocketLocation + FowardVecotr * 50.f);
-			ThirdSkillEffect->SetWorldRotation((HitResults[0].ImpactPoint - HandSocketLocation).Rotation());
-			ThirdSkillEffect->SetNiagaraVariableFloat(FString("Length"), Distance / 1700.f);
-			//ThirdSkillEffect->SetNiagaraVariableVec3(FString("Length"), FVector(0.7f, 0.7f, 0.1f));
-			UE_LOG(LogTemp, Error, TEXT("%f"), Distance / 1900.f);
-		}
-
-		ETraceTypeQuery ETQ =  UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
-		TArray<AActor*> ActorToIgnore;
-		ActorToIgnore.Add(OwnerCharacter);
-		TArray<FHitResult> ThirdSkillHitResults;
-		UKismetSystemLibrary::CapsuleTraceMulti(this, Start, Start + Direction * Distance, 50.f, 50.f, ETQ, false, ActorToIgnore, EDrawDebugTrace::None, ThirdSkillHitResults, true);
-		for (FHitResult Hit : HitResults)
-		{
-			if (Cast<ACharacter>(Hit.GetActor()))
-			{
-				UGameplayStatics::ApplyDamage(Hit.GetActor(), ThirdSkillDamage, OwnerCharacter->GetPlayerController(), OwnerCharacter, UDamageType::StaticClass());
-			}
-		}
-	}
+	ThirdSkillAttack();
 }
 void URevenantCombatComponent::PlayAttackMontage(ERevenantSkill State)
 {
@@ -333,16 +291,57 @@ void URevenantCombatComponent::SecondSkillEnd()
 }
 
 
+void URevenantCombatComponent::ThirdSkillAttack()
+{
+	if (bThirdSkillPressed)
+	{
+		const FVector HandSocketLocation = RevenantCharacter->GetMesh()->GetSocketLocation(FName("hand_r_ability_socket"));
+		const FVector FowardVecotr = RevenantCharacter->GetMesh()->GetRightVector();
+		const FRotator SocketRotation = RevenantCharacter->GetMesh()->GetSocketRotation(FName("hand_r_ability_socket"));
+		const FVector Start = HandSocketLocation + FowardVecotr * 50.f;
+		FVector Direction = HitResults[0].ImpactPoint - HandSocketLocation;
+		Direction.Normalize();
+
+		float Distance = (HitResults[0].ImpactPoint - HandSocketLocation).Size();
+		if (Distance > ThirdSkillLength)
+			Distance = ThirdSkillLength;
+
+		if (ThirdSkillEffect == nullptr)
+		{
+			ThirdSkillEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ThirdSkillParticle,
+				HandSocketLocation + FowardVecotr * 50.f, (HitResults[0].ImpactPoint - HandSocketLocation).Rotation());
+
+			ThirdSkillEffect->SetWorldScale3D(FVector(1.f, 2.f, 1.f));
+		}
+		else
+		{
+			ThirdSkillEffect->SetWorldLocation(HandSocketLocation + FowardVecotr * 50.f);
+			ThirdSkillEffect->SetWorldRotation((HitResults[0].ImpactPoint - HandSocketLocation).Rotation());
+			ThirdSkillEffect->SetNiagaraVariableFloat(FString("Length"), Distance / 1700.f);
+		}
+
+		ETraceTypeQuery ETQ = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+		TArray<AActor*> ActorToIgnore;
+		ActorToIgnore.Add(OwnerCharacter);
+		TArray<FHitResult> ThirdSkillHitResults;
+		UKismetSystemLibrary::CapsuleTraceMulti(this, Start, Start + Direction * Distance, 50.f, 50.f, ETQ, false, ActorToIgnore, EDrawDebugTrace::None, ThirdSkillHitResults, true);
+		for (FHitResult Hit : HitResults)
+		{
+			if (Cast<ACharacter>(Hit.GetActor()))
+			{
+				UGameplayStatics::ApplyDamage(Hit.GetActor(), ThirdSkillDamage, OwnerCharacter->GetPlayerController(), OwnerCharacter, UDamageType::StaticClass());
+			}
+		}
+	}
+}
 void URevenantCombatComponent::ThirdSkillPressed()
 {
 	if (!CanThirdSkill()) return;
 
 	PlayAttackMontage(ERevenantSkill::ERS_ThirdSkill);
-	// 타이머 설정, ((애니메이션 재생)), 상태설정
+	// 타이머 설정, 상태설정
 	Super::ThirdSkillPressed();
 
-	//SetIsOffUpperarmTransformModify(true);
-	// ThirdSkillReleasedDelay초 후에 스킬 자동 취소
 	bThirdSkillPressed = true;
 	IsFullBodySkill = true;
 	bUseFootIK = false;
@@ -377,7 +376,6 @@ void URevenantCombatComponent::ThirdSkillEnd()
 	OwnerCharacter->ChangeInputExceptMouse(true);
 	IsFullBodySkill = false;
 	bUseFootIK = true;
-	//SetIsOffUpperarmTransformModify(false);
 }
 // 이벤트 그래프에의해 호출됨
 void URevenantCombatComponent::ThirdSkillJumpToLoop()
@@ -418,7 +416,6 @@ bool URevenantCombatComponent::Teleport()
 
 		// 쿨타임 설정
 		Super::SecondSkillPressed();
-		//IsFullBodySkill = true;
 		bTeleportButtonPressed = false;
 
 		if (ReaperTeleport->Destroy())
@@ -426,9 +423,7 @@ bool URevenantCombatComponent::Teleport()
 
 		RevenantHUD = RevenantHUD == nullptr ? Cast<ARevenantHUD>(RevenantCharacter->GetPlayerController()->GetHUD()) : RevenantHUD;
 		if (RevenantHUD)
-		{
 			RevenantHUD->ShowSecondSkillHUD(false);
-		}
 
 		ActiveKeyboardInput(false);
 		ActiveMouseInput(false);
@@ -442,9 +437,7 @@ void URevenantCombatComponent::CancelTeleport()
 {
 	RevenantHUD = RevenantHUD == nullptr ? Cast<ARevenantHUD>(RevenantCharacter->GetPlayerController()->GetHUD()) : RevenantHUD;
 	if (RevenantHUD)
-	{
 		RevenantHUD->ShowSecondSkillHUD(false);
-	}
 
 	if (ReaperTeleport)
 	{
@@ -455,7 +448,6 @@ void URevenantCombatComponent::CancelTeleport()
 }
 bool URevenantCombatComponent::CanTeleport()
 {
-	// 순간이동을 할 수 있는지 조건 따지기(떨어지고 있는지 등)
 	if (CurrentCombatState == ECombatState::ECS_Idle) return true;
 
 	return false;

@@ -89,6 +89,8 @@ private:// 우클릭 관련 변수들
 	float RightClickTraceDistance = 4000.f;
 	UPROPERTY(EditAnywhere, Category = RightClick)
 	float RightClickReverseTraceDistance = 4000.f;
+	UPROPERTY(EditAnywhere, Category = RightClick)
+	float AddDistanceforInterp = 300.f;
 
 	UPROPERTY(EditAnywhere, Category = RightClick)
 	float RightClickInterpSpeed = 2.f;

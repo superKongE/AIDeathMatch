@@ -125,8 +125,8 @@ private:// default attack 관련 변수
 
 	bool bFastBuff = false;
 	bool DefaultAttackPressed = false;
+	// 현재 공격 딜레이 상태인지 아닌지 (딜레이 상태면 공격 못함)
 	bool bDefaultAttackDelay = false;
-	bool bDefaultAttackSuccess = false;
 
 	float CurrentDefaultAttackDelayTime = 0.f;
 
@@ -188,9 +188,6 @@ private: // dash 관련 변수
 	FOnTimelineVector MoveTrack;
 	FOnTimelineEvent MoveTrackEnd;
 
-	//FOnTimelineVector MoveTrackVector;
-	//FOnTimelineEvent MoveTrackEndVector;
-
 	FVector FowardVector;
 	FVector RightVector;
 	FVector UpVector;
@@ -220,6 +217,10 @@ private:
 
 	bool bWeaponTrace = false;
 
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	int32 WeaponSocketCnt = 9;
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float WeaponSocketTraceDistance = 30.f;
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float WeaponDamage = 20.f;
 

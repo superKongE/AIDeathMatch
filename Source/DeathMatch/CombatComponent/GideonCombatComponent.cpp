@@ -285,6 +285,7 @@ void UGideonCombatComponent::StrongAttack(const TArray<FHitResult>& HitResultsAr
 	FQP.AddIgnoredActor(OwnerCharacter);
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, FQP);
 	
+	// 장애물이 없다면
 	if (!HitResult.bBlockingHit)
 	{
 		CurrentLocation = OwnerCharacter->GetActorLocation();
@@ -293,6 +294,7 @@ void UGideonCombatComponent::StrongAttack(const TArray<FHitResult>& HitResultsAr
 	}
 	else
 	{
+		// 해당 벽을 뚫고가면 맵 밖인지 체크
 		FHitResult ObjectHitResult;
 		FCollisionObjectQueryParams FOQP;
 		FOQP.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel1);
@@ -307,6 +309,7 @@ void UGideonCombatComponent::StrongAttack(const TArray<FHitResult>& HitResultsAr
 		TArray<AActor*> IgnoreActors;
 		TArray<FHitResult> HitResultArr;
 	
+		// 캐릭터 앞으로 어떤 장애물이 있는지 조사
 		UKismetSystemLibrary::LineTraceMultiForObjects(this, Start, HitResult.ImpactPoint, ETQ, false, IgnoreActors, EDrawDebugTrace::None, HitResultArr, true);
 
 		float CapsuleRadius = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
@@ -321,61 +324,19 @@ void UGideonCombatComponent::StrongAttack(const TArray<FHitResult>& HitResultsAr
 			FHitResult TempHitResult = HitResultArr[Idx];
 
 			FVector CapsuleLocation = TempHitResult.ImpactPoint + (CrosshairWorldDirection * (CapsuleRadius + 50.f));
-			//DrawDebugSphere(GetWorld(), CapsuleLocation, 20.f, 15, FColor::Red, true);
-
 			bool bCanTeleport = GetWorld()->FindTeleportSpot(OwnerCharacter, CapsuleLocation, OwnerCharacter->GetActorRotation());
 
+			// 해당 위치로 이동가능한지
 			if (bCanTeleport)
 			{
-				FHitResult HitResultToCheckFalling;
-				GetWorld()->LineTraceSingleByChannel(HitResultToCheckFalling, CapsuleLocation, CapsuleLocation + FVector(0.f, 0.f, -RightClickTraceDistance), ECollisionChannel::ECC_Visibility);
-				if (HitResultToCheckFalling.bBlockingHit)
+				GetWorld()->LineTraceSingleByChannel(HitResult, CapsuleLocation, CapsuleLocation + FVector(0.f, 0.f, -RightClickTraceDistance), ECollisionChannel::ECC_Visibility);
+				if (HitResult.bBlockingHit)
 				{
 					CurrentLocation = OwnerCharacter->GetActorLocation();
-					TargetLocation = CapsuleLocation + CrosshairWorldDirection * 300.f;
+					TargetLocation = CapsuleLocation + CrosshairWorldDirection * AddDistanceforInterp;
 					bRightClickInterp = true;
 					break;
 				}
-			}
-			else
-			{
-				// 밑으로 충돌이 나는지 체크
-				FHitResult HitResultToCheck;
-				GetWorld()->LineTraceSingleByChannel(HitResultToCheck, CapsuleLocation, CapsuleLocation + FVector(0.f, 0.f, -(CapsuleHalfHeight * 2)), ECollisionChannel::ECC_Visibility);				
-				if (HitResultToCheck.bBlockingHit)
-				{
-					CapsuleLocation = HitResultToCheck.ImpactPoint + FVector(0.f, 0.f, CapsuleHalfHeight);
-
-					bCanTeleport = GetWorld()->FindTeleportSpot(OwnerCharacter, CapsuleLocation, OwnerCharacter->GetActorRotation());
-
-					if (bCanTeleport)
-					{
-						CurrentLocation = OwnerCharacter->GetActorLocation();
-						TargetLocation = CapsuleLocation + CrosshairWorldDirection * 300.f;
-						bRightClickInterp = true;
-						break;
-					}
-				}
-
-				// 위로 충돌이 나는지 체크
-				else
-				{
-					GetWorld()->LineTraceSingleByChannel(HitResultToCheck, CapsuleLocation, CapsuleLocation + FVector(0.f, 0.f, CapsuleHalfHeight * 2), ECollisionChannel::ECC_Visibility);
-					if (HitResultToCheck.bBlockingHit)
-					{
-						CapsuleLocation = HitResultToCheck.ImpactPoint + (CrosshairWorldDirection * (CapsuleRadius + 50.f)) - FVector(0.f, 0.f, CapsuleHalfHeight);
-
-						bCanTeleport = GetWorld()->FindTeleportSpot(OwnerCharacter, CapsuleLocation, OwnerCharacter->GetActorRotation());
-
-						if (bCanTeleport)
-						{
-							CurrentLocation = OwnerCharacter->GetActorLocation();
-							TargetLocation = CapsuleLocation + CrosshairWorldDirection * 300.f;
-							bRightClickInterp = true;
-							break;
-						}
-					}
-				}			
 			}
 		}
 	}

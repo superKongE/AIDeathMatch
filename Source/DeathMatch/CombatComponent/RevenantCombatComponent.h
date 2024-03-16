@@ -69,6 +69,8 @@ public:
 	bool Teleport();
 	void CancelTeleport();
 	void SpawnTeleport();
+	
+	void ThirdSkillAttack();
 
 	virtual void FirstSkillEnd();
 	virtual void SecondSkillEnd();
