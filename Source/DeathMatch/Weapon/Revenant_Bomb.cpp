@@ -7,6 +7,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
+#include "DeathMatch/MovementComponent/BombMovementComponent.h"
+
 ARevenant_Bomb::ARevenant_Bomb()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -17,7 +19,7 @@ ARevenant_Bomb::ARevenant_Bomb()
 	BombMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bomb"));
 	BombMesh->SetupAttachment(RootComponent);
 
-	BombMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("BombMovementComponent"));
+	BombMovementComponent = CreateDefaultSubobject<UBombMovementComponent>(TEXT("BombMovementComponent"));
 	BombMovementComponent->InitialSpeed = 4000.f;
 	BombMovementComponent->MaxSpeed = 4000.f;
 	BombMovementComponent->ProjectileGravityScale = BombGravity;

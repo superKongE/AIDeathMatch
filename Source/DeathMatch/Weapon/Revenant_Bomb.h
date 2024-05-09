@@ -41,7 +41,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* SphereArea = nullptr;
 	UPROPERTY(EditAnywhere)
-	class UProjectileMovementComponent* BombMovementComponent = nullptr;
+	class UBombMovementComponent* BombMovementComponent = nullptr;
 
 private:
 	UPROPERTY(EditAnywhere)
