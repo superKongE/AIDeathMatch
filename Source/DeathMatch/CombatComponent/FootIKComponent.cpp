@@ -69,11 +69,8 @@ void UFootIKComponent::FootLineTrace(const FName& SocketName, FVector& HitLocati
 		FCollisionQueryParams FQP;
 		FQP.AddIgnoredActor(OwnerCharacter);
 		GetWorld()->LineTraceSingleByChannel(HitResult, FootStartLocation, FootEndLocation, ECollisionChannel::ECC_Visibility, FQP);
-		//DrawDebugLine(GetWorld(), FootStartLocation, FootEndLocation, FColor::Red);
 		if (HitResult.bBlockingHit)
 		{
-			//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 15, FColor::Blue);	
-			//DrawDebugSphere(GetWorld(), OwnerCharacter->GetMesh()->GetComponentLocation(), 5.f, 15, FColor::Red);
 			FootTraceOffset = OwnerCharacter->GetMesh()->GetComponentLocation().Z - HitResult.ImpactPoint.Z;
 			HitLocation = HitResult.ImpactPoint;
 		}
