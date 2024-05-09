@@ -22,6 +22,7 @@ ARevenant_Bomb::ARevenant_Bomb()
 	BombMovementComponent = CreateDefaultSubobject<UBombMovementComponent>(TEXT("BombMovementComponent"));
 	BombMovementComponent->InitialSpeed = 4000.f;
 	BombMovementComponent->MaxSpeed = 4000.f;
+	BombMovementComponent->bRotationFollowsVelocity = true;
 	BombMovementComponent->ProjectileGravityScale = BombGravity;
 }
 
@@ -29,7 +30,7 @@ void ARevenant_Bomb::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereArea->OnComponentHit.AddDynamic(this, &ARevenant_Bomb::OnHit);
+	SphereArea->OnComponentBeginOverlap.AddDynamic(this, &ARevenant_Bomb::OnOverlapBegin);
 }
 
 void ARevenant_Bomb::Tick(float DeltaTime)
@@ -37,10 +38,8 @@ void ARevenant_Bomb::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-//                                        때리는 것(총알, 칼 등), 맞은 액터, 맞은 컴포넌트
-void ARevenant_Bomb::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-	const FHitResult& Hit)
+void ARevenant_Bomb::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != GetOwner())
 	{
