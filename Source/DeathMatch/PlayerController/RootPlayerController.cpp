@@ -43,9 +43,6 @@ void ARootPlayerController::CharacterSelectComplete()
 		// 캐릭터 선택을 완료해 새로 소환할 캐릭터를 현재 캐릭터 위치로 변경
 		if (OwnerCharacter->CharacterSelectComplete())
 		{
-			// 캐릭터 선택창 닫기
-			//OwnerCharacter->CharacterSelectButtonPressed();
-
 			ARootCharacter* PrevOwnerCharacter = OwnerCharacter;
 			OwnerCharacter = OwnerCharacter->GetSpawnCharacter();
 			OwnerCharacter->SetOwner(this);
@@ -54,21 +51,13 @@ void ARootPlayerController::CharacterSelectComplete()
 				HUD->Reset();
 			Possess(OwnerCharacter);
 
-			if (MyHUD != NULL)
-			{
-				MyHUD->Destroy();
-				MyHUD = NULL;
-			}
-			FActorSpawnParameters SpawnInfo;
-			SpawnInfo.Owner = this;
-			SpawnInfo.Instigator = GetInstigator();
-			SpawnInfo.ObjectFlags |= RF_Transient;	// We never want to save HUDs into a map
-			MyHUD = GetWorld()->SpawnActor<AHUD>(OwnerCharacter->GetHudClass(), SpawnInfo);
-			if(MyHUD)
+			ClientSetHUD(OwnerCharacter->GetHudClass());
+			if (MyHUD)
 				HUD = Cast<ARootHUD>(MyHUD);
 
 			OwnerCharacter->SetHP(PrevOwnerCharacter->GetCurrentHP());
 			OwnerCharacter->Init();
+
 			PrevOwnerCharacter->DestroyFromCharacterSelect();
 			PrevOwnerCharacter->Destroy();
 		}
@@ -88,7 +77,6 @@ void ARootPlayerController::ShowCharacterSelectMenu(bool bShow)
 void ARootPlayerController::SetHUDHP(const float MaxHP, const float TargetHP)
 {
 	HUD = HUD == nullptr ? Cast<ARootHUD>(GetHUD()) : HUD;
-
 	if (HUD && HUD->GetCharacterOverlay() && HUD->GetCharacterOverlay()->TargetHPBar)
 	{
 		const float Percent = TargetHP / MaxHP;

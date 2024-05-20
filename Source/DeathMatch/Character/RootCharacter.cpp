@@ -156,12 +156,12 @@ void ARootCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ARootCharacter::Init()
 {
 	PlayerController = Cast<ARootPlayerController>(Controller);
-	if (PlayerController && HUD)
+
+	if (PlayerController)
 	{
 		SpawnLocation = GetActorLocation();
 
 		SetHUDHP();
-		PlayerController->ClientSetHUD(HUD);
 		if (CombatComponent)
 		{
 			CombatComponent->SetCharacter(this);
