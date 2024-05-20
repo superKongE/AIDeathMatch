@@ -30,7 +30,8 @@ void ARevenant_Bomb::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereArea->OnComponentBeginOverlap.AddDynamic(this, &ARevenant_Bomb::OnOverlapBegin);
+	if(SphereArea)
+		SphereArea->OnComponentBeginOverlap.AddDynamic(this, &ARevenant_Bomb::OnOverlapBegin);
 }
 
 void ARevenant_Bomb::Tick(float DeltaTime)
