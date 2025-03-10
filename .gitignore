@@ -1,5 +1,7 @@
-/Saved
-/Intermediate
+Binaries
+DerivedDataCache
+Intermediate
+Saved
 /.vs
 /Build
 *.sln
