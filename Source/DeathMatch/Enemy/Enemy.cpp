@@ -181,7 +181,7 @@ void AEnemy::SetCanTeleport(bool bCan)
 }
 
 
-// AI ControllerÀÇ OnPerception¿¡ ÀÇÇØ¼­ È£ÃâµÊ
+// AI Controllerï¿½ï¿½ OnPerceptionï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ È£ï¿½ï¿½ï¿½
 void AEnemy::CanSeeEnemy(ACharacter* ViewTargetActor)
 {
 	if (ViewTargetActor)
@@ -214,7 +214,7 @@ void AEnemy::CanSeeEnemy(ACharacter* ViewTargetActor)
 		EnemyController->GetBlackboardComponent()->SetValueAsVector(TEXT("ViewTargetLocation"), ViewTargetActorLocation);
 	}
 }
-// AI°¡ º¸°íÀÖ´Â ÀûÀÇ ½ÅÃ¼ ºÎºÐ
+// AIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Îºï¿½
 void AEnemy::SetTargetBone(FName& BoneName) const
 {
 	TargetBoneName = BoneName;
@@ -224,8 +224,8 @@ void AEnemy::SetTargetBone(FName& BoneName) const
 
 void AEnemy::AISightPerception()
 {
-	// AI°¡ ÀûÀ» °¨Áö½Ã
-	// AIÀÇ ´«¿¡¼­ ÀûÀÇ ½ÅÃ¼ºÎºÐ(¸Ó¸®, ÆÈ, ´Ù¸® µî)±îÁöÀÇ °¢µµ ±¸ÇÏ±â
+	// AIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// AIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½Îºï¿½(ï¿½Ó¸ï¿½, ï¿½ï¿½, ï¿½Ù¸ï¿½ ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 	EnemyController = EnemyController == nullptr ? Cast<AEnemyController>(GetController()) : EnemyController;
 	if (TargetActor && EnemyController)
 	{
@@ -275,8 +275,6 @@ void AEnemy::Detect(float DeltaTime)
 
 				EnemyController->GetBlackboardComponent()->SetValueAsBool(TEXT("bViewTarget"), false);
 				EnemyController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsFindPlayerTimeEnd"), IsFindPlayerTimeEnd);
-
-				return;
 			}
 		}
 	}

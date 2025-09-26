@@ -92,9 +92,9 @@ void USevarogCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	if (bDefaultAttackDelay)
 	{	
-		// °ø°İ¿¡ µô·¹ÀÌ¸¦ ÁÖ±â À§ÇÔ 
+		// ï¿½ï¿½ï¿½İ¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		CurrentDefaultAttackDelayTime += DeltaTime;
-		// °ø°İÅ°¸¦ °è¼Ó ´©¸£°í ÀÖ´Â °æ¿ì DefaultAttackDelayÃÊ ÀÌ»óÀÌ Áö³ª¾ßÁö¸¸ ÀÚµ¿ °ø°İÀÌ ÀÌ·ç¾îÁø´Ù
+		// ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ DefaultAttackDelayï¿½ï¿½ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (CurrentDefaultAttackDelayTime > DefaultAttackDelay)
 		{
 			if (DefaultAttackPressed)
@@ -240,7 +240,7 @@ void USevarogCombatComponent::UpdateMoveCurve(FVector Value)
 	if (DashTrailParticle)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DashTrailParticle, ActorLocation);
 
-	//// ¶ÕÀ» ¼ö ÀÖ´Â º®ÀÎÁö
+	//// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	TArray<TEnumAsByte<EObjectTypeQuery>> ETQ;
 	ETQ.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
 	TArray<AActor*> IgnoreActors;
@@ -250,7 +250,7 @@ void USevarogCombatComponent::UpdateMoveCurve(FVector Value)
 	FVector Normal = HitResult.Normal;
 	Normal = FVector(FMath::Abs(Normal.X), Normal.Y, Normal.Z);
 	FVector XAxis = FVector(1.0f, 0.0f, 0.0f);	
-	// º®À» ¶ÕÀ» ¼ö ¾ø´Â °æ¿ì
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 	if (HitResult.bBlockingHit)
 	{
 		MoveTimeline->Stop();
@@ -294,11 +294,10 @@ void USevarogCombatComponent::DashTimeEnd()
 }
 
 
-
 void USevarogCombatComponent::ReadyForWeaponTrace()
 {
 	if (OwnerCharacter == nullptr) return;
-
+	
 	const USkeletalMeshSocket* WeaponSocket = OwnerCharacter->GetMesh()->GetSocketByName(FName("WeaponSocket_1"));
 	FVector Location = WeaponSocket->GetSocketLocation(OwnerCharacter->GetMesh());
 	WeaponSocketArr[0].CurrentLocation = Location;
@@ -307,6 +306,7 @@ void USevarogCombatComponent::ReadyForWeaponTrace()
 	WeaponSocket->GetSocketMatrix(WeaponSocketMartix, OwnerCharacter->GetMesh());
 	const FVector Direction(WeaponSocketMartix.GetUnitAxis(EAxis::X));
 
+	// WeaponSocketì˜ ìœ„ì¹˜ì—ì„œ ì‹œì‘í•´ WeaponSocketì˜ xì¶• ë°©í–¥ìœ¼ë¡œ WeaponSocketTraceDistance * i ë§Œí¼ì”© ë–¨ì–´ì§„ ìœ„ì¹˜ì—ë‹¤ ì¶©ëŒ ì§€ì  ìœ„ì¹˜ ì„¤ì •
 	for (int i = 1; i < WeaponSocketCnt; i++)
 		WeaponSocketArr[i].CurrentLocation = Location + Direction * WeaponSocketTraceDistance * i;
 }
@@ -326,22 +326,18 @@ void USevarogCombatComponent::StartWeaponTrace()
 	for (int i = 0; i < WeaponSocketCnt; i++)
 	{
 		FWeaponSocketInfo WeaponSocketInfo = WeaponSocketArr[i];
-
-		// ÀÌÀü ÇÁ·¹ÀÓÀÇ ¼ÒÄÏÀ¸·ÎºÎÅÍ ÇöÀç ÇÁ·¹ÀÓÀÇ ¼ÒÄÏ±îÁö LineTrace¼öÇà
+		
 		GetWorld()->LineTraceSingleByChannel(HitResult, WeaponSocketInfo.CurrentLocation, Location + Direction * WeaponSocketTraceDistance * i, ECollisionChannel::ECC_Visibility, FQP);
 		if (HitResult.bBlockingHit)
 		{
-			// impact point¿¡ ÀÌÆåÆ® »ı¼º
-			if (HitParticle && !HitParticleSet.Contains(HitResult.GetActor()))
+			ACharacter* Chr = Cast<ACharacter>(HitResult.GetActor());
+
+			// HitCharSetì„ í†µí•´ ì¤‘ë³µì²´í¬í•˜ì—¬ ì´ë¯¸ ê³µê²©ì— ë§ì€ ëŒ€ìƒì¸ì§€ ì²´í¬
+			if (HitParticle && !HitCharSet.Contains(Chr) && !IsCharacterBehindWall(Chr))
 			{
-				HitParticleSet.Emplace(HitResult.GetActor());
+				HitCharSet.Emplace(Chr);
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, HitResult.ImpactPoint);
 			}
-
-			// ¸ÂÀº ´ë»óÀÌ Ä³¸¯ÅÍ°í º®¿¡ °¡·ÁÁ®ÀÖÁö ¾ÊÀ¸¸é
-			ACharacter* Chr = Cast<ACharacter>(HitResult.GetActor());
-			if (Chr && !IsCharacterBehindWall(Chr))
-				HitCharSet.Emplace(Chr);
 		}
 
 		WeaponSocketArr[i].CurrentLocation = Location + Direction * WeaponSocketTraceDistance * i;
@@ -358,12 +354,12 @@ bool USevarogCombatComponent::IsCharacterBehindWall(ACharacter* Chr)
 	FQP.AddIgnoredActor(OwnerCharacter);
 
 	int32 cnt = 0;
+	// ìºë¦­í„°ì˜ ë¨¸ë¦¬, ëª¸í†µ, íŒ”, ë‹¤ë¦¬, ì†, ë°œì— ëŒ€í•´ LineTrace ì§„í–‰í•´ ëª¨ë‘ ì¶©ëŒì´ ê°ì§€ë˜ë©´ ë²½ ë’¤ì— ìˆëŠ”ê±¸ë¡œ íŒì •
 	for (FName& TargetBone : ViewTargetsArr)
 	{
 		FVector SocketLocation = Enemy->GetMesh()->GetSocketLocation(TargetBone);
 		FHitResult HitResult;
 		GetWorld()->LineTraceSingleByChannel(HitResult, DefaultAttackStartLocation, SocketLocation, ECollisionChannel::ECC_Visibility, FQP);
-		//DrawDebugLine(GetWorld(), DefaultAttackStartLocation, SocketLocation, FColor::Red, true);
 
 		if (HitResult.bBlockingHit)
 			cnt++;
@@ -380,8 +376,8 @@ void USevarogCombatComponent::DefaultAttack(const TArray<FHitResult>& HitResults
 {
 	DefaultAttackPressed = true;
 
-	// Ã¹¹øÂ° ½ºÅ³À» ½á¼­ °ø¼ÓÀÌ »¡¶óÁú ½Ã
-	// ¸¶¿ì½º¸¦ ²Ú ´©¸£´Â°Í º¸´Ù Å¬¸¯À¸·Î ´õ ºü¸£°Ô ÄŞº¸ °ø°İ °¡´ÉÇÏ°Ô ²û
+	// Ã¹ï¿½ï¿½Â° ï¿½ï¿½Å³ï¿½ï¿½ ï¿½á¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Şºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½
 	if (bDefaultAttackDelay)
 	{
 		bDefaultAttackDelay = false;
@@ -412,13 +408,12 @@ void USevarogCombatComponent::DefaultAttackPlay()
 
 	DefaultAttackCnt = (DefaultAttackCnt + 1) % 2;
 }
-// ¹«±â¸¦ ´Ù ÈÖµÎ¸£¸é ÀÌº¥Æ® ±×·¡ÇÁ¿¡¼­ ¹öÇÁ°¡ ÄÑÁø»óÅÄÁö È®ÀÎÇÏ±â À§ÇØ È£ÃâµÊ + µ¥¹ÌÁö ÁÖ±â 
+// ë¬´ê¸°ë¥¼ ë‹¤ íœ˜ë‘ë¥´ë©´ Anim Notifyì— ì˜í•´ í˜¸ì¶œë¨ 
 void USevarogCombatComponent::DefaultAttackBuff()
 {
 	DefaultAttackWeaponTrailComponent->SetVisibility(false);
 	bWeaponTrace = false;
-
-	// ¹öÇÁ°¡ ÄÑÁ®ÀÖÀ¸¸é
+	
 	if (bFastBuff)
 	{
 		CurrentDefaultAttackDelayTime = 0.f;
@@ -426,9 +421,10 @@ void USevarogCombatComponent::DefaultAttackBuff()
 	}
 
 	for (ACharacter* Chr : HitCharSet)
+	{
 		UGameplayStatics::ApplyDamage(Chr, WeaponDamage, OwnerCharacter->GetController(), OwnerCharacter, UDamageType::StaticClass());
-	HitCharSet.Reset();
-	HitParticleSet.Reset();
+	}
+	HitCharSet.Reset(); // ê³µê²©ì´ ëë‚˜ë©´ Setì„ ë¹„ìš´ë‹¤
 }
 void USevarogCombatComponent::LeftClickReleased()
 {
@@ -474,12 +470,12 @@ void USevarogCombatComponent::FirstSkillPressed()
 {
 	if (!CanFirstSkill()) return;
 
-	// °ø°İ »óÅÂ ¹× ½ºÅ³ ÇÁ·Î±×·¹½º¹Ù ¾÷µ¥ÀÌÆ®
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½Î±×·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	Super::FirstSkillPressed();
 
 	PlayDefaultAttackMontage(ESevarogSkill::ESS_FirstSkill);
 
-	// ÄğÅ¸ÀÓ ¼³Á¤
+	// ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	bFastBuff = true;
 	GetWorld()->GetTimerManager().SetTimer(FirstSkillBuffTimerHandle, this, &USevarogCombatComponent::FirstSkillBuffEnd, FirstSkillBuffTime, false);
 }
@@ -502,7 +498,7 @@ void USevarogCombatComponent::SecondSkillPressed()
 	GetWorld()->LineTraceSingleByChannel(HitResult, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation() - FVector(0.f, 0.f, 5000.f), ECollisionChannel::ECC_Visibility, FQP);
 	float distance = OwnerCharacter->GetActorLocation().Z - HitResult.ImpactPoint.Z - OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
-	// °øÁß¿¡ ÀÖÀ¸¸é ³»·ÁÂï±â
+	// ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (distance > SecondSkillReadyFallDistance)
 	{
 		bTakeDownFinish = false;
@@ -576,7 +572,7 @@ void USevarogCombatComponent::ThirdSkillPressed()
 {
 	if (!CanThirdSkill()) return;
 
-	// °ø°İ »óÅÂ ¹× ÄğÅ¸ÀÓ ¼³Á¤
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	Super::ThirdSkillPressed();
 
 	DefaultAttackWeaponTrailComponent->SetVisibility(true);

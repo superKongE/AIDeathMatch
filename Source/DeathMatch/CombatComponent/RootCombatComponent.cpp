@@ -386,7 +386,6 @@ void URootCombatComponent::Death()
 	bSecondSkillPressed = false;
 	bThirdSkillPressed = false;
 	IsFullBodySkill = false;
-	IsOffUpperarmTransformModify = false;
 }
 
 

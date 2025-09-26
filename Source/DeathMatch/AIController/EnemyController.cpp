@@ -38,7 +38,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 
 	if (InPawn == nullptr) return;
 
-	// °¨Áö »óÅÂ°¡ ¹Ù²î¸é È£ÃâµÊ
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Ù²ï¿½ï¿½ È£ï¿½ï¿½ï¿½
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyController::OnPerception);
 
 	AEnemy* Enemy = Cast<AEnemy>(InPawn);
@@ -48,7 +48,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 		{
 			BlackboardComponent->InitializeBlackboard(*(Enemy->GetBehaviorTree()->BlackboardAsset));
 			
-			// ºñÇìÀÌºñ¾î Æ®¸® ½ÇÇà
+			// ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			if (Enemy->GetBehaviorTree())
 				RunBehaviorTree(Enemy->GetBehaviorTree());
 		}
@@ -69,7 +69,6 @@ void AEnemyController::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 		}
 		else
 		{
-
 			ClearFocus(EAIFocusPriority::Gameplay);
 			OwnerCharacter->CanSeeEnemy(nullptr);
 		}

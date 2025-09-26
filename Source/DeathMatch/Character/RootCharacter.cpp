@@ -46,18 +46,15 @@ ARootCharacter::ARootCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	Camera->SetupAttachment(SpringArm);
 
-	CharacterSelectComponent = CreateDefaultSubobject<UCharacterSelectComponent>("CharacterSelectComponent");
 	FootIKComponent = CreateDefaultSubobject<UFootIKComponent>(TEXT("FootIKComponent"));
 }
-// ÄÄÆ÷³ÍÆ®µéÀÌ ÃÊ±âÈ­µÈÈÄ BeginPlay()°¡ È£ÃâµÇ±âÀü¿¡ 
-// Áï Ä³¸¯ÅÍ°¡ ¼ÒÈ¯µÇ±âÀü¿¡ ¹Ì¸® º¯¼ö ÃÊ±âÈ­ÀÛ¾÷
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½ï¿½ï¿½ï¿½ BeginPlay()ï¿½ï¿½ È£ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ 
+// ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½È¯ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Û¾ï¿½
 void ARootCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	if (CombatComponent)
 		CombatComponent->SetCharacter(this);
-	if (CharacterSelectComponent)
-		CharacterSelectComponent->SetCharacter(this);
 	if (FootIKComponent)
 		FootIKComponent->SetOwnerCharacter(this);
 }
@@ -65,10 +62,10 @@ void ARootCharacter::PostInitializeComponents()
 {
 	Super::BeginPlay();
 
-	// ¾Ö´Ï¸ÞÀÌ¼Ç ºí·çÇÁ¸°Æ®ÀÇ ¾Ö´Ï¸ÞÀÌ¼Ç ·¹ÀÌ¾î¸¦
-	// AnimLayerClassÀÇ ·¹ÀÌ¾î·Î ¿¬°á½ÃÅ°±â À§ÇÔ
-	// unlink ¿Í link¸¦ ÅëÇØ ¾Ö´Ï¸ÞÀÌ¼Ç ·¹ÀÌ¾î¸¦ ¹Ù²Ù¸é¼­
-	// °£´ÜÇÏ°Ô ¾Ö´Ï¸ÞÀÌ¼ÇÀ» ¹Ù²Ü¼ö ÀÖ´Ù (¿¹¸¦µé¾î °È±â ¸ðµå -> ´Þ¸®±â ¸ðµå)
+	// ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½Ì¾î¸¦
+	// AnimLayerClassï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// unlink ï¿½ï¿½ linkï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½Ì¾î¸¦ ï¿½Ù²Ù¸é¼­
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½Ù²Ü¼ï¿½ ï¿½Ö´ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È±ï¿½ ï¿½ï¿½ï¿½ -> ï¿½Þ¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
 	if (AnimLayerClass)
 		GetMesh()->LinkAnimClassLayers(AnimLayerClass);
 
@@ -124,7 +121,7 @@ void ARootCharacter::Tick(float DeltaTime)
 
 			PlayerController->SetVisibleDeathProgress(false);
 
-			// Ä³¸¯ÅÍ ºÎÈ°ÇÏ±â
+			// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½Ï±ï¿½
 			Spawn();
 
 			IsDeath = false;
@@ -151,8 +148,8 @@ void ARootCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ARootCharacter::LookUp);
 	PlayerInputComponent->BindAxis(FName("LookRound"), this, &ARootCharacter::LookRound);
 }
-// Ä³¸¯ÅÍ ¼±ÅÃÃ¢¿¡¼­ Ä³¸¯ÅÍ¸¦ °ñ¶ó ¼ÒÈ¯ÇßÀ»¶§´Â PlayerController°¡ PossessµÈ »óÅÂ°¡ ¾Æ´Ï¹Ç·Î
-// PossessÇÑÈÄ PlayerController¿¡¼­ µû·Î ÃÊ±âÈ­ ÀÛ¾÷À» À§ÇØ È£ÃâÇÔ
+// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ PlayerControllerï¿½ï¿½ Possessï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´Ï¹Ç·ï¿½
+// Possessï¿½ï¿½ï¿½ï¿½ PlayerControllerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½
 void ARootCharacter::Init()
 {
 	PlayerController = Cast<ARootPlayerController>(Controller);
@@ -188,7 +185,7 @@ float ARootCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	SetHUDHP();
 	if (TargetHP <= 0.f)
 	{
-		// °ø°ÝÀÌ ¾Õ¿¡¼­ ¿ÂÁö µÚ¿¡¼­ ¿ÂÁö
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Õ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (FVector::DotProduct(GetActorForwardVector(), DamageCauser->GetActorLocation()) >= 0.f)
 			IsFowardDeath = true;
 		else
@@ -230,7 +227,7 @@ void ARootCharacter::ReadyToSpawn()
 	TargetHP = CurrentHP = MaxHP;
 	IsOverlapCharacterSelectArea = true;
 }
-// »ç¸Á ¾Ö´Ï¸ÞÀÌ¼ÇÀÌ ³¡³­ ÈÄ¿¡ È£ÃâµÊ
+// ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¿ï¿½ È£ï¿½ï¿½ï¿½
 void ARootCharacter::DeathEnd()
 {
 	GetMesh()->SetVisibility(false);
@@ -247,7 +244,7 @@ void ARootCharacter::Jump()
 }
 void ARootCharacter::MoveFoward(float Value)
 {
-	if (!bActiveInputExeptMouse) return;
+	if (Value == 0.f || !bActiveInputExeptMouse) return;
 
 	const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 	const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X));
@@ -256,7 +253,7 @@ void ARootCharacter::MoveFoward(float Value)
 }
 void ARootCharacter::MoveRight(float Value)
 {
-	if (!bActiveInputExeptMouse) return;
+	if (Value == 0.f || !bActiveInputExeptMouse) return;
 
 	const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 	const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
@@ -279,22 +276,22 @@ void ARootCharacter::LookRound(float Value)
 
 
 
-// ±âº» °ø°Ý
+// ï¿½âº» ï¿½ï¿½ï¿½ï¿½
 void ARootCharacter::DefaultAttack()
 {
 	skip = !skip;
 	if (!bActiveInputExeptMouse) return;
 	/*
-	* °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
-	* °ø°Ý LinTrace
-	* ÀÌÆåÆ® Àç»ý, ¼Ò¸® Àç»ý
+	* ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
+	* ï¿½ï¿½ï¿½ï¿½ LinTrace
+	* ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½, ï¿½Ò¸ï¿½ ï¿½ï¿½ï¿½
 	*/
 	if (CombatComponent)
 	{
 		CombatComponent->DefaultAttack(CombatComponent->GetHitResults());
 	}
 }
-// °­È­ ±âº» °ø°Ý
+// ï¿½ï¿½È­ ï¿½âº» ï¿½ï¿½ï¿½ï¿½
 void ARootCharacter::StrongAttack()
 {
 	if (!bActiveInputExeptMouse) return;
@@ -392,29 +389,24 @@ void ARootCharacter::CharacterSelectButtonPressed()
 {
 	if (!IsOverlapCharacterSelectArea || !bActiveInputExeptMouse) return;
 
+	OpenSelectWidgetLocation = GetActorLocation();
+	OpenSelectWidgetRotator = GetActorRotation();
 	PlayerController = PlayerController == nullptr ? Cast<ARootPlayerController>(Controller) : PlayerController;
 	if (PlayerController)
 	{
-		//IsCharacterSelectButtonPressed = !IsCharacterSelectButtonPressed;
+		bActiveInputExeptMouse = false;
 		PlayerController->ShowCharacterSelectMenu(true);
 	}
 }
-void ARootCharacter::CharacterSelect(const int32 index)
+void ARootCharacter::CharacterSelect(const FName SelectCharacterName)
 {
-	CharacterSelectComponent->CharacterSelect(index);
+	CharacterSelectComponent->CharacterSelect(SelectCharacterName);
 }
 bool ARootCharacter::CharacterSelectComplete()
 {
 	PlayerController->ShowCharacterSelectMenu(false);
-
-	// Ä³¸¯ÅÍ ¼±ÅÃÀ» ¿Ï·áÇØ »õ·Î ¼ÒÈ¯ÇÒ Ä³¸¯ÅÍ¸¦ ÇöÀç Ä³¸¯ÅÍ À§Ä¡·Î º¯°æ
-	if (!CharacterSelectComponent->CharacterSelectComplete())
-	{
-		DeleteSpawnedCharacter();
-		return false;
-	}
-
-	return true;
+	bActiveInputExeptMouse = true;
+	return CharacterSelectComponent->CharacterSelectComplete();
 }
 ARootCharacter* ARootCharacter::GetSpawnCharacter()
 {
@@ -489,8 +481,8 @@ bool ARootCharacter::FootStepNotify(const FName& BoneName)
 }
 
 
-// Sight Perception¿¡¼­ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÑ´ÙÀ½
-// ÀÌ ÇÔ¼öÀÇ return °ªÀ» ÅëÇØ °¨ÁöµÈÁö ¿©ºÎ¸¦ °áÁ¤
+// Sight Perceptionï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½
+// ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 bool ARootCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed,
 	float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
 {
@@ -499,15 +491,15 @@ bool ARootCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& Out
 	const AEnemy* Enemy = Cast<AEnemy>(IgnoreActor);
 	if (Enemy == nullptr) return false;
 	
-	// AIÀÇ Foward Vector¿Í
-	// AI¿¡¼­ ÀûÀ¸·ÎÀÇ º¤ÅÍ¸¦ ³»ÀûÇØ AI ¾ÕÂÊ¿¡ ÀûÀÌ ÀÖ´ÂÁö Ã¼Å©
+	// AIï¿½ï¿½ Foward Vectorï¿½ï¿½
+	// AIï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AI ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ Ã¼Å©
 	FVector AIForwardVector = IgnoreActor->GetActorForwardVector();
 	AIForwardVector.Normalize();
 
 	FVector AIToCharacter = GetActorLocation() - IgnoreActor->GetActorLocation();
 	AIToCharacter.Normalize();
 
-	// À½¼öÀÏ °æ¿ì ÀûÀÌ AI µÚ¿¡ ÀÖ´Ù
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ AI ï¿½Ú¿ï¿½ ï¿½Ö´ï¿½
 	if (FVector::DotProduct(AIForwardVector, AIToCharacter) < 0.f) return false;
 	
 	for (int32 i = 0; i < ViewTargets.Num(); i++)
@@ -518,7 +510,6 @@ bool ARootCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& Out
 		FCollisionQueryParams FQP;
 		FQP.AddIgnoredActor(IgnoreActor);
 		GetWorld()->LineTraceSingleByChannel(HitResult, ObserverLocation, SocketLocation, ECollisionChannel::ECC_Visibility, FQP);
-		//DrawDebugLine(GetWorld(), ObserverLocation, SocketLocation, FColor::Red, false);
 		NumberOfLoSChecksPerformed++;
 		if (HitResult.bBlockingHit)
 		{
@@ -577,13 +568,6 @@ void ARootCharacter::OverlapCharacterSelectArea(bool bOverlap)
 }
 
 
-void ARootCharacter::DeleteSpawnedCharacter()
-{
-	if (CharacterSelectComponent)
-	{
-		CharacterSelectComponent->DeleteSpawnedCharacter();
-	}
-}
 
 void ARootCharacter::ChangeInputExceptMouse(bool IsOff)
 {
@@ -619,10 +603,4 @@ void ARootCharacter::SetHP(float HP)
 {
 	CurrentHP = HP;
 	TargetHP = HP;
-}
-
-
-void ARootCharacter::DestroyFromCharacterSelect()
-{
-
 }

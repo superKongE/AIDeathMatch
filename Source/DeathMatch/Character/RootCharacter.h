@@ -52,11 +52,8 @@ public:
 	virtual void ThirdSkillPressed();
 	virtual void ThirdSkillRelease();
 
-	//void PlayAttackMontage(EAttackState AttackState);
-
-
 	void CharacterSelectButtonPressed();
-	void CharacterSelect(const int32 index);
+	void CharacterSelect(const FName SelectCharacterName);
 	bool CharacterSelectComplete();
 	ARootCharacter* GetSpawnCharacter();
 
@@ -97,8 +94,6 @@ public:
 
 	void OverlapCharacterSelectArea(bool bOverlap);
 
-	void DeleteSpawnedCharacter();
-
 	void ChangeInputExceptMouse(bool IsOff);
 
 
@@ -106,11 +101,9 @@ public:
 	float GetFootROffset();
 	float GetHipOffset();
 
-	virtual void DestroyFromCharacterSelect();
-
 protected:
 	UPROPERTY(EditAnywhere, Category = "HUD")
-	UClass* HUD;
+	TSubclassOf<class AHUD> HUD;
 
 	UPROPERTY()
 	class ARootPlayerController* PlayerController = nullptr;
@@ -133,12 +126,13 @@ protected:
 	UPROPERTY()
 	class UAnimInstance* MyAnimInstance = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	int32 CharacterNum;
+	UPROPERTY(EditAnywhere, Category = Name)
+	FName CharacterName;
 
 	float Pitch = 0.f;
 
-	bool bCharacterUseFootIK; // 캐릭터 자체가 FootIK를 사용하는지
+	bool bCharacterUseFootIK;
+
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -172,6 +166,7 @@ private:
 
 	int32 PrevPercent = -1;
 	float DeathPercent = 0.f;
+	UPROPERTY(EditAnywhere, Category=Death)
 	float DeathPercentCharge = 0.1f;
 
 private:
@@ -188,24 +183,32 @@ private:
 	bool IsCharacterSelectButtonPressed = false;
 	bool bActiveInputExeptMouse = true;
 	bool bActiveMouseInput = true;
-
-
 	bool IsOverlapCharacterSelectArea = false;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ARootCharacter> CharacterClass;
+
+	FVector OpenSelectWidgetLocation;
+	FRotator OpenSelectWidgetRotator;
 
 public:
 	FORCEINLINE class ARootPlayerController* GetPlayerController() { return PlayerController; }
 	FORCEINLINE class UCameraComponent* GetCamera() { return Camera; }
 	FORCEINLINE class URootCombatComponent* GetCombatComponent() { return CombatComponent; }
 	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() { return SpringArm; }
+	FORCEINLINE class UCharacterSelectComponent* GetCharacterSelectComponent() { return CharacterSelectComponent; }
+	FORCEINLINE void SetCharacterSelectComponent(UCharacterSelectComponent* CharacterSelectComponent_) { CharacterSelectComponent = CharacterSelectComponent_; }
 	FORCEINLINE float GetCurrentHP() { return CurrentHP; }
 	FORCEINLINE float GetAimOffset() { return Pitch; }
-	FORCEINLINE int32 GetCharacterNum() { return CharacterNum; }
-	FORCEINLINE void SetCharacterNum(int32 num) { CharacterNum = num; }
+	FORCEINLINE FName GetCharacterName() { return CharacterName; }
 	FORCEINLINE void SetHitTargetLocation(FVector& Location) { HitTargetLocation = Location; }
 	FORCEINLINE FVector GetHitTargetLocation() { return HitTargetLocation; }
+	FORCEINLINE FVector GetOpenSelectWidgetLocation() { return OpenSelectWidgetLocation; }
+	FORCEINLINE FRotator GetOpenSelectWidgetRotator() { return OpenSelectWidgetRotator; }
 	FORCEINLINE bool GetISDeath() { return IsDeath; }
 	FORCEINLINE bool GetIsFowardDeath() { return IsFowardDeath; }
 	FORCEINLINE bool GetCharacterUseFootIK() { return bCharacterUseFootIK; }
 	FORCEINLINE TSubclassOf<class AHUD> GetHudClass() { return HUD; }
 	FORCEINLINE void SetAnimLayerClass(UClass* AnimLayerClass_) { AnimLayerClass = AnimLayerClass_; }
+	FORCEINLINE TSubclassOf<ARootCharacter> GetCharacterClass() { return CharacterClass; }
 };

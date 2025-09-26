@@ -12,6 +12,8 @@ enum ECharacterSelectIndex : int32
 	ECSI_Sevarog = 2
 };
 
+class ARootCharacter;
+class APreviewActor;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DEATHMATCH_API UCharacterSelectComponent : public UActorComponent
@@ -27,12 +29,8 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void CharacterSelect(const int32 index);
+	void CharacterSelect(const FName SelectCharacterName);
 	bool CharacterSelectComplete();
-
-	void DeleteSpawnedCharacter();
-
-	void SetSpawnCharacter();
 
 public:
 	FORCEINLINE void SetCharacter(class ARootCharacter* Character) { OwnerCharacter = Character; }
@@ -40,24 +38,22 @@ public:
 
 private:
 	UPROPERTY()
-	class ARootCharacter* OwnerCharacter = nullptr;
+	ARootCharacter* OwnerCharacter;
 	UPROPERTY()
-	class ARootCharacter* SpawnCharacter = nullptr;
+	ARootCharacter* SpawnCharacter;
+	UPROPERTY()
+	APreviewActor* SelectedPreviewActor;
+
+	UPROPERTY()
+	TMap<FName, ARootCharacter*> CharacterMap;
+	UPROPERTY()
+	TMap<FName, APreviewActor*> PreviewActorMap;
 
 	FVector SpawnLocation;
 	FRotator SpawnRotation;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> CharacterSelectPoint;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ARootCharacter> GideonClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ARootCharacter> RevenantClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ARootCharacter> SevarogClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ARootCharacter> TwinblastClass;
 
 	bool bCharacterSelected = false;
 };

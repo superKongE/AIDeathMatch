@@ -21,7 +21,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void CharacterSelect(const int32 index);
+	void CharacterSelect(const FName SelectCharacterName);
 	UFUNCTION(BlueprintCallable)
 	void CharacterSelectComplete();
 

@@ -5,7 +5,6 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/Border.h"
-
 #include "DeathMatch/Character/RootCharacter.h"
 #include "DeathMatch/HUD/RootHUD.h"
 #include "DeathMatch/HUD/GideonHUD.h"
@@ -25,12 +24,12 @@ void ARootPlayerController::OnPossess(APawn* InPawn)
 }
 
 
-void ARootPlayerController::CharacterSelect(const int32 index)
+void ARootPlayerController::CharacterSelect(const FName SelectCharacterName)
 {
 	OwnerCharacter = OwnerCharacter == nullptr ? Cast<ARootCharacter>(GetCharacter()) : OwnerCharacter;
 	if (OwnerCharacter)
 	{
-		OwnerCharacter->CharacterSelect(index);
+		OwnerCharacter->CharacterSelect(SelectCharacterName);
 	}
 }
 // 캐릭터 선택창에서 확인 누르면 호출되는 함수
@@ -46,20 +45,22 @@ void ARootPlayerController::CharacterSelectComplete()
 			ARootCharacter* PrevOwnerCharacter = OwnerCharacter;
 			OwnerCharacter = OwnerCharacter->GetSpawnCharacter();
 			OwnerCharacter->SetOwner(this);
-			HUD = HUD == nullptr ? Cast<ARootHUD>(GetHUD()) : HUD;
+			//HUD = HUD == nullptr ? Cast<ARootHUD>(GetHUD()) : HUD;
 			if (HUD)
 				HUD->Reset();
+
 			Possess(OwnerCharacter);
 
 			ClientSetHUD(OwnerCharacter->GetHudClass());
 			if (MyHUD)
 				HUD = Cast<ARootHUD>(MyHUD);
 
+			OwnerCharacter->SetCharacterSelectComponent(PrevOwnerCharacter->GetCharacterSelectComponent());
 			OwnerCharacter->SetHP(PrevOwnerCharacter->GetCurrentHP());
 			OwnerCharacter->Init();
 
-			PrevOwnerCharacter->DestroyFromCharacterSelect();
-			PrevOwnerCharacter->Destroy();
+			FVector PrevCharacterLocation = PrevOwnerCharacter->GetActorLocation();
+			PrevOwnerCharacter->SetActorLocation(FVector(PrevCharacterLocation.X, PrevCharacterLocation.Y, -10000.f));
 		}
 	}
 }

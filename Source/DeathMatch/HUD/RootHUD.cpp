@@ -21,7 +21,6 @@ void ARootHUD::Reset()
 {
 	if (CharacterOverlay != nullptr)
 	{
-		CharacterOverlay->SetVisibility(ESlateVisibility::Collapsed);
 		CharacterOverlay->RemoveFromViewport();
 		CharacterOverlay = nullptr;
 	}
@@ -136,7 +135,6 @@ void ARootHUD::ShowCharacterSelectMenu(const bool bShow)
 	if (bShow)
 	{
 		CharacterSelectMenu->SetVisibility(ESlateVisibility::Visible);
-		//CharacterOverlay->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 		FInputModeUIOnly InputModeUIOnly;
 		OwningPlayerController->SetInputMode(InputModeUIOnly);
@@ -145,7 +143,6 @@ void ARootHUD::ShowCharacterSelectMenu(const bool bShow)
 	else
 	{
 		CharacterSelectMenu->SetVisibility(ESlateVisibility::Collapsed);
-		//CharacterOverlay->SetVisibility(ESlateVisibility::Hidden);
 
 		FInputModeGameOnly InputModeGameOnly;
 		OwningPlayerController->SetInputMode(InputModeGameOnly);

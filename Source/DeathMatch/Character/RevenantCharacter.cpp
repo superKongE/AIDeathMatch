@@ -1,9 +1,10 @@
 #include "DeathMatch/Character/RevenantCharacter.h"
 
 #include "Components/ChildActorComponent.h"
-
+#include <GameFramework/HUD.h>
 #include "DeathMatch/CombatComponent/RevenantCombatComponent.h"
 #include "DeathMatch/PlayerController/RootPlayerController.h"
+#include "DeathMatch/CharacterSelectComponent/CharacterSelectComponent.h"
 
 ARevenantCharacter::ARevenantCharacter()
 {
@@ -11,10 +12,9 @@ ARevenantCharacter::ARevenantCharacter()
 	BombPoint->SetupAttachment(RootComponent);
 
 	CombatComponent = CreateDefaultSubobject<URevenantCombatComponent>(TEXT("RevenantCombatComponent"));
-
-	bCharacterUseFootIK = true;
-
-	CharacterNum = 0;
+	CharacterSelectComponent = CreateDefaultSubobject<UCharacterSelectComponent>("CharacterSelectComponent");
+	
+	CharacterName = FName(TEXT("Revenant"));
 
 	ViewTargets.Emplace(FName("head"));
 	ViewTargets.Emplace(FName("spine_01"));
@@ -46,6 +46,13 @@ void ARevenantCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction(FName("Reload"), IE_Pressed, this, &ARevenantCharacter::Reload);
+}
+void ARevenantCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (CharacterSelectComponent)
+		CharacterSelectComponent->SetCharacter(this);
 }
 
 

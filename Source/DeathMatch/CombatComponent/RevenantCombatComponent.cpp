@@ -214,17 +214,13 @@ void URevenantCombatComponent::ThrowBomb()
 }
 void URevenantCombatComponent::FirstSkillPressed()
 {
-	// 쿨타임이 끝나지 않았거나, Idle 상태가 아니라면
 	if (!CanFirstSkill()) return;
 
 	// 공격 상태 및 쿨타임 설정
 	Super::FirstSkillPressed();
 
-	//SetIsOffUpperarmTransformModify(true);
-
 	PlayAttackMontage(ERevenantSkill::ERS_FirstSkill);
 
-	// 폭탄 날리기
 	ThrowBomb();
 }
 void URevenantCombatComponent::FirstSkillReleased()
@@ -234,7 +230,6 @@ void URevenantCombatComponent::FirstSkillReleased()
 // 이벤트 그래프에의해 호출됨
 void URevenantCombatComponent::FirstSkillEnd()
 {
-	//SetIsOffUpperarmTransformModify(false);
 	bFirstSkillPressed = false;
 	Super::FirstSkillEnd();
 }
@@ -244,7 +239,6 @@ void URevenantCombatComponent::SecondSkillPressed()
 {
 	if (OwnerCharacter->GetPlayerController() == nullptr) return;
 
-	// 순간이동이 가능한 상태이고, 쿨타임이 끝났다면
 	if (CanSecondSkill())
 	{
 		bTeleportButtonPressed = !bTeleportButtonPressed;
@@ -324,7 +318,7 @@ void URevenantCombatComponent::ThirdSkillAttack()
 		TArray<AActor*> ActorToIgnore;
 		ActorToIgnore.Add(OwnerCharacter);
 		TArray<FHitResult> ThirdSkillHitResults;
-		UKismetSystemLibrary::CapsuleTraceMulti(this, Start, Start + Direction * Distance, 50.f, 50.f, ETQ, false, ActorToIgnore, EDrawDebugTrace::None, ThirdSkillHitResults, true);
+		UKismetSystemLibrary::CapsuleTraceMulti(this, Start, Start + Direction * Distance, 50.f, 50.f, ETQ, false, ActorToIgnore, EDrawDebugTrace::Persistent, ThirdSkillHitResults, true);
 		for (FHitResult Hit : HitResults)
 		{
 			if (Cast<ACharacter>(Hit.GetActor()))
@@ -365,7 +359,7 @@ void URevenantCombatComponent::ThirdSkillReleased()
 		ThirdSkillEffect = nullptr;
 	}
 	
-	ThirdSkillJumpToEnd();
+	//ThirdSkillJumpToEnd();
 }
 // 이벤트 그래프에의해 호출됨
 void URevenantCombatComponent::ThirdSkillEnd()
@@ -393,7 +387,7 @@ void URevenantCombatComponent::ThirdSkillJumpToLoop()
 void URevenantCombatComponent::ThirdSkillJumpToEnd()
 {
 	UAnimInstance* AnimInstance = GetOwnerCharacter()->GetMesh()->GetAnimInstance();
-	if (AnimInstance)
+	if (AnimInstance && !OwnerCharacter->GetISDeath())
 	{
 		AnimInstance->Montage_Play(CombatMontage);
 
@@ -502,8 +496,6 @@ void URevenantCombatComponent::Reload()
 {
 	if (!CanReload()) return;
 
-	SetIsOffUpperarmTransformModify(true);
-
 	SetCurrentCombatState(ECombatState::ECS_Reload);
 	PlayReloadMontage();
 }
@@ -519,7 +511,7 @@ void URevenantCombatComponent::PlayReloadMontage()
 void URevenantCombatComponent::ReloadEnd()
 {
 	SetCurrentCombatState(ECombatState::ECS_Idle);
-	SetIsOffUpperarmTransformModify(false);
+
 	CurrentAmmo = MaxAmmo;
 	SetAmmoHUD(CurrentAmmo);
 }
